@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../static/css/style.css" rel="stylesheet">
+
+    <meta charset="utf-8">
+    <title>Groups page</title>
+
+
+</head>
+
+<body>
+    <main class="main-container">
+        <section class="group-management">
+            <a class="back-link no-extra" href="/">← Back to groups</a>
+            <div class="group-data__wrapper">
+                <h2 class="group-title">{{account_name.capitalize()}} stories</h2>
+                <p class="inside-accounts-count">{{stories_count}} stories</p>
+            </div>
+            <div class="account-info__nav-wrapper">
+                <ul class="no-extra account-info__nav-list">
+                    <li class="account-info__nav-item"><a class="no-extra" href="/posts/{{account_name}}">Posts</a></li>
+                    <li class="account-info__nav-item"><a class="no-extra" href="/reels/{{account_name}}">Reels</a></li>
+                    <li class="account-info__nav-item"><a class="no-extra" href="/stories/{{account_name}}">Stories</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="accounts-info">
+            <div class="download-all-media-manage__wrapper">
+                <a class="no-extra download-all-media-btn" href="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{account_name}}/{{account_name}}.zip" download="">
+                    Download all media
+                </a>
+            </div>
+
+            <table class="accounts-table">
+                  <tr class="table-tr-first table-tr-first-posts table-tr-first-stories">
+                    <th class="table-th"><p class="no-extra th-name">Story</p></th>
+                    <th class="table-th" >Date of release</th>
+                    <th class="table-th" >Downloading</th>
+                  </tr>
+                  {% for story in stories %}
+                      <tr class="table-tr table-tr-posts table-tr-stories">
+
+                        <td class="table-td table-td-posts table-td-first">
+                            <a class="no-extra table-account-link" href="/posts/">
+                                {% if 'mp4' in story[-1] %}
+                                    <div class="box">
+                                        <img class="table-content-image"
+                                             src="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{account_name}}/stories/{{story[0]}}_preview.jpg"
+                                             alt="Image">
+                                        <img class="video_player_image" src="https://www.pngarts.com/files/2/Play-Button-PNG-Picture.png" alt="" style="opacity: 0.75">
+                                    </div>
+                                        <!--                                <p class="no-extra table-account-p">На страницу</p>-->
+                                {% else %}
+                                    <div class="box">
+                                        <img class="table-content-image"
+                                             src="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{account_name}}/stories/{{story[0]}}.jpg"
+                                             alt="Image">
+                                    </div>
+                                {% endif %}
+                            </a>
+                        </td>
+                        <td class="table-td table-td-posts table-td-release-inf">
+                            <p class="no-extra">
+                                {{story[1]}}
+                            </p>
+                        </td>
+                        <td class="table-td table-td-posts">
+                            <a class="no-extra" href="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{story[-1]}}" download>Download story</a>
+                        </td>
+                      </tr>
+                  {% endfor %}
+            </table>
+        </section>
+    </main>
+<!--    <section class="confirm-download-modal" id="confirm-download-modal">-->
+<!--        <div class="modal-wrapper modal-wrapper-download">-->
+<!--            <h2 class="confirm-download-modal__title">Confirm download</h2>-->
+<!--            <form method="post" action="/download_local_file_action" id="download-local-file__form"-->
+<!--                  class="confirm-download__form">-->
+<!--                <button class="modal-confirm__confirm-btn" id="modal-confirm__confirm-btn">Confirm</button>-->
+<!--                <button class="modal-confirm__back-btn" id="modal-confirm__back-btn">Back</button>-->
+<!--                <input type="hidden" value="" id="confirm-download-filename__input"-->
+<!--                       name="confirm-download-filename__input">-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </section>-->
+<!--    <script src="../static/js/download_post.js"></script>-->
+</body>
+
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../static/css/style.css" rel="stylesheet">
+
+    <meta charset="utf-8">
+    <title>Groups page</title>
+
+
+</head>
+
+<body>
+    <main class="main-container">
+        <section class="group-management">
+            <a class="back-link no-extra" href="/">← Back to groups</a>
+            <div class="group-data__wrapper">
+                <h2 class="group-title">{{current_group[1]}} group accounts</h2>
+                <p class="inside-accounts-count">{{accounts_count}} accounts</p>
+            </div>
+            <nav class="groups-navigation">
+                <div class="groups-navigation__wrapper">
+                    <ul class="groups-list no-extra">
+                        {% for group in groups %}
+                            <li class="groups-list-item"><a class="no-extra" href="/{{group[0]}}">{{group[1]}}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <div class="groups-management-btn__wrapper">
+                    <button class="groups-management-btn new-group-btn no-extra" id="group-adding__modal__btn">Add new group</button>
+                    <button class="groups-management-btn delete-group-btn no-extra"
+                            id="delete-group-btn"
+                            onclick="sendDeleteRequest({{current_group[0]}})">Delete group</button>
+                </div>
+                </div>
+
+            </nav>
+        </section>
+
+        <section class="accounts-info">
+            <button class="new-acc-adding-btn" id="new-acc-adding-btn">Add new account</button>
+            <table class="accounts-table">
+                  <tr class="table-tr_first-main">
+                    <th class="table-th table-th-main"><p class="no-extra th-name">Account</p></th>
+                    <th class="table-th table-th-main">Total stories</th>
+                    <th class="table-th table-th-main" colspan="2"> Insta Link</th>
+
+                  </tr>
+                  {% for account in accounts %}
+                      <tr class="table-tr table-tr-main">
+
+                        <td class="table-td table-td-first">
+                            <a class="no-extra table-account-link" href="/posts/{{account[2]}}">
+                                <img class="table-image"
+                                     src="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{account[-4]}}"
+                                     alt="Image">
+                                <p class="no-extra table-account-p">{{account[2].capitalize()}}</p>
+                            </a>
+                        </td>
+                        <td class="table-td">{{account[-2]}}</td>
+                        <td class="table-td">
+                            <a class="no-extra" target="_blank" href="https://www.instagram.com/{{account[2]}}">
+                                {{account[2].capitalize()}}
+                            </a>
+                        </td>
+                        <td class="table-td table-td-last">
+                            <div class="table-td-management">
+                                <button class="table-delete-button no-extra"
+                                onclick="sendAccDeleteRequest({{account[0]}})">
+                                        <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12.3333 4.99999V4.33332C12.3333 3.3999 12.3333 2.93319 12.1517 2.57667C11.9919 2.26307 11.7369 2.0081 11.4233 1.84831C11.0668 1.66666 10.6001 1.66666 9.66667 1.66666H8.33333C7.39991 1.66666 6.9332 1.66666 6.57668 1.84831C6.26308 2.0081 6.00811 2.26307 5.84832 2.57667C5.66667 2.93319 5.66667 3.3999 5.66667 4.33332V4.99999M7.33333 9.58332V13.75M10.6667 9.58332V13.75M1.5 4.99999H16.5M14.8333 4.99999V14.3333C14.8333 15.7335 14.8333 16.4335 14.5608 16.9683C14.3212 17.4387 13.9387 17.8212 13.4683 18.0608C12.9335 18.3333 12.2335 18.3333 10.8333 18.3333H7.16667C5.76654 18.3333 5.06647 18.3333 4.53169 18.0608C4.06129 17.8212 3.67883 17.4387 3.43915 16.9683C3.16667 16.4335 3.16667 15.7335 3.16667 14.3333V4.99999" stroke="#475467" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                </button>
+                                <button class="edit-group-btn no-extra" id="edit-group-btn"
+                                onclick="ChangeGroup({{account[0]}})">
+                                        <svg width="17" height="17" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1.39668 15.0964C1.43497 14.7518 1.45411 14.5795 1.50624 14.4185C1.55249 14.2756 1.61784 14.1396 1.70051 14.0142C1.79369 13.8729 1.91627 13.7504 2.16142 13.5052L13.1667 2.49999C14.0871 1.57951 15.5795 1.57951 16.5 2.49999C17.4205 3.42046 17.4205 4.91285 16.5 5.83332L5.49475 16.8386C5.2496 17.0837 5.12702 17.2063 4.98572 17.2995C4.86035 17.3821 4.72439 17.4475 4.58152 17.4937C4.42048 17.5459 4.24819 17.565 3.90362 17.6033L1.08331 17.9167L1.39668 15.0964Z" stroke="#475467" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                </button>
+                            </div>
+                        </td>
+                      </tr>
+
+                  {% endfor %}
+            </table>
+        </section>
+    </main>
+    <section class="new-group-adding__modal" id="new-group-adding__modal">
+            <div class="group-adding__wrapper">
+                <form action="/add_new_group" method="post" id="new-group-form" class="new-group__form">
+                    <div class="title-close">
+                        <h3 class="modal-title">Add new group</h3>
+                        <button class="modal__close-btn" id="close-group-adding-modal" type="button">
+                            <svg width="44" height="45" viewBox="0 0 44 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M28 16.5L16 28.5M16 16.5L28 28.5" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="adding-fields__wrapper">
+                        <label for="group-name">Group name</label>
+                        <input class="add-group__input no-extra " name="group-name" id="group-name" type="text"
+                               placeholder="Group name" required="">
+                    </div>
+
+                    <button class="new-group-adding-btn" id="new-group-adding-btn">Add new group</button>
+                </form>
+
+            </div>
+    </section>
+    
+    
+    <section class="modal__add-new-account-window" id="acc-modal-window">
+            <div class="modal-wrapper">
+                <form action="/add_new_acc" method="post" id="add-page-form" class="add-new-account__form">
+                    <div class="title-close">
+                        <h3 class="modal-title">Add new account</h3>
+                        <button class="modal__close-btn" id="close-acc-modal" type="button">
+                            <svg width="44" height="45" viewBox="0 0 44 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M28 16.5L16 28.5M16 16.5L28 28.5" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="url-wrapper">
+                        <label for="account-link">Instagram nickname*</label>
+                        <input class="page-url-field" name="account-link" id="account-link" type="text" placeholder="Instagram nickname" required="">
+                    </div>
+                    <div class="add-setting__wrapper">
+                        <ul class="options-list no-extra">
+                            <li class="options-item no-extra">
+                                <label class="options-item-lb ">Group*</label>
+                                <select class="options-select" name="group">
+                                    {% for group in groups %}
+                                        <option>{{group[1]}}</option>
+                                    {% endfor %}
+                                </select>
+                            </li>
+                        </ul>
+                    </div>
+                    <button class="options-add-new-account-btn">Add new account</button>
+                </form>
+
+            </div>
+        </section>
+
+        <section class="modal__change_account_group_window" id="change-account-group-modal-window">
+                <div class="modal-wrapper">
+                    <form action="/change_account_group" method="post" id="change-group__form" class="change-group__form">
+                        <div class="title-close">
+                            <h3 class="modal-title">Change account's group</h3>
+                            <button class="modal__close-btn close-change-account-group-modal" id="close-change-account-group-modal" type="button">
+                                <svg width="44" height="45" viewBox="0 0 44 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M28 16.5L16 28.5M16 16.5L28 28.5" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="change-group-modal__message-wrapper">
+                            <p class="change-group-modal__message">
+                                New group:
+
+                            </p>
+                            <select class="change-group-select" name="group-name">
+
+                                {% for group in groups %}
+                                        <option>{{group[1]}}</option>
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+                        <input type="hidden" id="accountIdField" name="accountIdField">
+                        <div class="delete-modal__manage-btns-wrapper">
+                        <button class="save-change-group-account" id="change-group-btn" name="send-delete-form" value="button-save">Save</button>
+                        </div>
+                    </form>
+
+                </div>
+            </section>
+    
+    <script src="../static/js/groups.js"></script>
+    <script src="../static/js/new_acc.js"></script>
+    <script src="../static/js/deleting_account.js"></script>
+
+</body>
+
+</html>
