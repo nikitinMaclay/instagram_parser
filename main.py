@@ -179,7 +179,7 @@ def instagram_accounts_parsing(account_name, group_id, posts_scroll_count, reel_
     res_post_urls = []
 
     for url in post_urls:
-        if url not in res_post_urls:
+        if url not in res_post_urls and url != "":
             res_post_urls.append(url)
 
     query_parameters = "__a=1&__d=dis"
