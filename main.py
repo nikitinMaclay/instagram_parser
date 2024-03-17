@@ -192,7 +192,6 @@ def instagram_accounts_parsing(account_name, group_id, posts_scroll_count, reel_
             driver.quit()
 
             driver = webdriver.Firefox(options=options)
-            driver.maximize_window()
             driver.implicitly_wait(5)
 
             driver.get(f"https://www.instagram.com/")
