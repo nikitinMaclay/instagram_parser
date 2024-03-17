@@ -96,8 +96,8 @@ def instagram_accounts_parsing(account_name, group_id, posts_scroll_count, reel_
     # options.profile = profile
 
     driver = webdriver.Firefox(options=options)
-    driver.maximize_window()
     driver.implicitly_wait(5)
+
 
     driver.get(f"https://www.instagram.com/")
     print("Opening the driver...")
@@ -193,10 +193,13 @@ def instagram_accounts_parsing(account_name, group_id, posts_scroll_count, reel_
 
             driver = webdriver.Firefox(options=options)
             driver.implicitly_wait(5)
-
-            driver.get(f"https://www.instagram.com/")
-            time.sleep(5)
-
+            try:
+                driver.get(f"https://www.instagram.com/")
+                time.sleep(5)
+            except:
+                time.sleep(5)
+                driver.get(f"https://www.instagram.com/")
+                time.sleep(5)
             username_input = driver.find_element(by=By.NAME, value="username")
             password_input = driver.find_element(by=By.NAME, value="password")
 
