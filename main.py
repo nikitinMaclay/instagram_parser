@@ -120,12 +120,12 @@ def instagram_accounts_parsing(account_name, group_id, posts_scroll_count, reel_
                                     value="/html/body/div[2]/div/div/div[2]/div/div/div[1]/section/main/article/div[2]/div[1]/div[2]/form/div/div[3]/button")
     time.sleep(1)
     login_btn.click()
-    time.sleep(10)
+    time.sleep(15)
 
     try:
         driver.find_element(by=By.XPATH,
                             value="/html/body/div[2]/div/div/div[2]/div/div/div[1]/section/main/article/div[2]/div[1]/div[2]/form/div/div[3]/button")
-        time.sleep(10)
+        time.sleep(15)
     except:
         pass
 

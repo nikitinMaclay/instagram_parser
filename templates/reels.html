@@ -35,8 +35,10 @@
                     Download all media
                 </a>
             </div>
-
-            <table class="accounts-table">
+            <div class="search__wrapper">
+                    <input type="text" id="searchInput" name="searchInput" class="searchInput" placeholder="Search...">
+            </div>
+            <table class="accounts-table custom-table table-sort table-arrows" id="data-table">
                   <tr class="table-tr-first table-tr-first-posts">
                     <th class="table-th"><p class="no-extra th-name">Reel</p></th>
                     <th class="table-th">Reel caption</th>
@@ -84,6 +86,9 @@
 <!--        </div>-->
 <!--    </section>-->
 <!--    <script src="../static/js/download_post.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/table-sort-js/table-sort.js"></script>
+    <script src="../static/js/table_search.js"></script>
+
 </body>
 
 </html>

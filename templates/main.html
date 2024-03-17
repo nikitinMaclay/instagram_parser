@@ -39,8 +39,14 @@
         </section>
 
         <section class="accounts-info">
-            <button class="new-acc-adding-btn" id="new-acc-adding-btn">Add new account</button>
-            <table class="accounts-table">
+            <div class="new-acc-adding__wrapper">
+                <button class="new-acc-adding-btn" id="new-acc-adding-btn">Add new account</button>
+                <button class="new-several-accs-adding-btn" id="new-several-accs-adding-btn">Add several accounts</button>
+            </div>
+                <div class="search__wrapper">
+                    <input type="text" id="searchInput" name="searchInput" class="searchInput" placeholder="Search...">
+                </div>
+                <table class="custom-table table-sort accounts-table table-arrows" id="data-table">
                   <tr class="table-tr_first-main">
                     <th class="table-th table-th-main"><p class="no-extra th-name">Account</p></th>
                     <th class="table-th table-th-main">Total stories</th>
@@ -143,6 +149,48 @@
             </div>
         </section>
 
+    <section class="modal__add-new-account-window modal__add-new-sev-account-window" id="sev-accs-modal-window">
+            <div class="modal-wrapper modal-sev-acc-wrapper">
+                <form action="/add_new_several_accounts" method="post" id="add-sev-page-form" class="add-new-account__form">
+                    <div class="title-close">
+                        <h3 class="modal-title">Add new account</h3>
+                        <button class="modal__close-btn" id="close-sev-accs-modal" type="button">
+                            <svg width="44" height="45" viewBox="0 0 44 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M28 16.5L16 28.5M16 16.5L28 28.5" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="url-wrapper">
+                        <div class="addInput__wrapper">
+                            <button id="addInputBtn" class="no-extra addInputBtn" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 50 50">
+                                    <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 24 13 L 24 24 L 13 24 L 13 26 L 24 26 L 24 37 L 26 37 L 26 26 L 37 26 L 37 24 L 26 24 L 26 13 L 24 13 z"></path>
+                                    </svg><p class="no-extra">Add new input</p>
+                            </button>
+                        </div>
+                        <div class="account-link__wrapper" id="account-link-wrapper">
+                            <label for="account-link">Instagram nickname*</label>
+                            <input class="page-url-field" name="account-link" id="sev-account-link" type="text" placeholder="Instagram nickname" required="">
+                        </div>
+                    </div>
+                    <div class="add-setting__wrapper">
+                        <ul class="options-list no-extra">
+                            <li class="options-item no-extra">
+                                <label class="options-item-lb ">Group*</label>
+                                <select class="options-select" name="group">
+                                    {% for group in groups %}
+                                        <option>{{group[1]}}</option>
+                                    {% endfor %}
+                                </select>
+                            </li>
+                        </ul>
+                    </div>
+                    <button class="options-add-new-account-btn">Add new account</button>
+                </form>
+
+            </div>
+        </section>
+
         <section class="modal__change_account_group_window" id="change-account-group-modal-window">
                 <div class="modal-wrapper">
                     <form action="/change_account_group" method="post" id="change-group__form" class="change-group__form">
@@ -179,7 +227,12 @@
     
     <script src="../static/js/groups.js"></script>
     <script src="../static/js/new_acc.js"></script>
+    <script src="../static/js/new_input.js"></script>
     <script src="../static/js/deleting_account.js"></script>
+    <script src="../static/js/table_search.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/table-sort-js/table-sort.js"></script>
+
 
 </body>
 

@@ -13,9 +13,35 @@ from database_manage.db_creation import create_database_local_connection
 from main import instagram_accounts_parsing
 
 from db_objects_management.db_account_management import delete_accounts_info, delete_accounts_media
+from flask_apscheduler import APScheduler
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "rtergkcx2312~@!3dsadase315240"
+
+
+flask_scheduler = APScheduler()
+
+
+def daily_instagram_accounts_parsing():
+    print("STARTED!!!")
+    db_con, cursor = create_database_local_connection()
+    cursor.execute("SELECT account_name, group_id FROM `accounts`")
+    accounts_info = cursor.fetchall()
+    for account in accounts_info:
+        parse_process = multiprocessing.Process(target=instagram_accounts_parsing, args=(account[0], account[1], 1, 1))
+        parse_process.start()
+        parse_process.join()
+        parse_process.close()
+        time.sleep(600)
+    cursor.close()
+    db_con.close()
+
+
+def instagram_accounts_parsing_list_edition(accounts_list, group_id):
+    for account_name in accounts_list:
+        instagram_accounts_parsing(account_name, group_id, 10, 10)
+        time.sleep(600)
+
 
 s3_resource = boto3.resource(
         's3',
@@ -146,7 +172,22 @@ def add_new_acc():
     cursor.close()
     parse_process = multiprocessing.Process(target=instagram_accounts_parsing, args=(acc_name, group_id, 10, 10))
     parse_process.start()
-    return redirect("/1")
+    return redirect(f"/{group_id}")
+
+
+@app.route('/add_new_several_accounts', methods=["POST"])
+def add_new_several_accounts():
+    db_con, cursor = create_database_local_connection()
+    accounts_list = request.form.getlist("account-link")
+    group_name = request.form['group']
+    cursor.execute(f"SELECT group_id FROM `groups` WHERE group_name = '{group_name}'")
+    group_id = cursor.fetchone()[0]
+    parsing_list_process = multiprocessing.Process(target=instagram_accounts_parsing_list_edition,
+                                                   args=(accounts_list, group_id,))
+    parsing_list_process.start()
+    db_con.close()
+    cursor.close()
+    return redirect(f"/{group_id}")
 
 
 @app.route('/change_account_group', methods=["POST"])
@@ -276,8 +317,10 @@ def download_local_file_action():
 
 
 def main():
-
-    app.run(host="0.0.0.0", debug=True)
+    flask_scheduler.add_job(id='Update Inst Accs Task', func=daily_instagram_accounts_parsing,
+                            trigger='cron', hour=0, minute=0, second=0)
+    flask_scheduler.start()
+    app.run(host="0.0.0.0", debug=True, use_reloader=False)
 
 
 if __name__ == '__main__':

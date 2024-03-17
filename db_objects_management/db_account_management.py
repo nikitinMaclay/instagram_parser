@@ -79,4 +79,4 @@ def delete_accounts_media(accounts_ids):
         delete_accounts_info(acc_id)
 
 
-# delete_accounts_media([66])
+# delete_accounts_media([68])

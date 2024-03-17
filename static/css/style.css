@@ -59,7 +59,7 @@ body {
     background: #EAECF0;
     border-radius: 15px;
     margin-top: 20px;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
 }
 
@@ -247,12 +247,19 @@ body {
     color: white;
     background: #6941C6;
     width: 240px;
-    margin: auto;
     border: none;
     border-radius: 10px;
     padding: 10px 14px;
-    margin-top: 32px;
-    margin-bottom: 24px;
+    cursor: pointer;
+}
+
+.new-several-accs-adding-btn {
+    color: white;
+    background: #6941C6;
+    width: 240px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
     cursor: pointer;
 }
 
@@ -280,6 +287,7 @@ body {
     width: 100%;
     height: 100%;
     display: none;
+
 }
 
 .modal__change_account_group_window {
@@ -565,4 +573,48 @@ body {
     overflow: hidden;
     width: 100px;
     height: 100px;
+}
+
+.new-acc-adding__wrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 520px;
+    margin-bottom: 50px;
+}
+
+.addInputBtn {
+    display: flex;
+    width: 110px;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    color: #6941C6;
+    cursor: pointer;
+}
+
+.addInputBtn:hover {
+    opacity: 0.7;
+}
+
+.account-link__wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.modal__add-new-sev-account-window {
+    overflow-y: auto;
+}
+
+.modal-sev-acc-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.searchInput {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
