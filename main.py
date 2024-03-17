@@ -187,7 +187,7 @@ def instagram_accounts_parsing(account_name, group_id, posts_scroll_count, reel_
     print("Start posts and reels data collecting...")
     print(f"Need to scrape {len(res_post_urls)} pages")
     for idx, url in enumerate(res_post_urls):
-        if idx > 0 and idx % 25 == 0:
+        if idx > 0 and idx % 10 == 0:
             print(f"     Parsing account has been changed")
             driver.quit()
 
@@ -232,7 +232,7 @@ def instagram_accounts_parsing(account_name, group_id, posts_scroll_count, reel_
             #         k += 1
             raw_data_btn = driver.find_element(By.ID, value="rawdata-tab")
             raw_data_btn.click()
-            time.sleep(0.5)
+            time.sleep(2)
 
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//pre")))
             pre_tag = driver.find_element(By.XPATH, "//pre")
