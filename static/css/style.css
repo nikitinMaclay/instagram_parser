@@ -26,7 +26,7 @@ body {
 }
 
 .group-management {
-    width: 1200px;
+    width: 1400px;
     margin: 0 auto;
 }
 
@@ -99,7 +99,7 @@ body {
 
 
 .accounts-info {
-    width: 1200px;
+    width: 1400px;
     margin: 40px auto 0 auto;
 }
 
@@ -134,10 +134,10 @@ body {
 
 .table-content-image {
     display: block;
-    width: 130px;
-    height: 130px;
     border: none;
     margin-right: 15px;
+    width: 100px;
+    height: 100px;
 }
 
 .table-td-management {
@@ -172,7 +172,7 @@ body {
 
 .table-tr-posts {
     display: grid;
-    grid-template-columns: 280px 350px 290px 280px;
+    grid-template-columns: 280px 350px 290px 280px 120px;
     grid-gap: 20px;
     border-left: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
@@ -182,7 +182,7 @@ body {
 
 .table-tr-first-posts {
     display: grid;
-    grid-template-columns: 280px 350px 290px 280px;
+    grid-template-columns: 280px 350px 290px 280px 120px;
     grid-gap: 20px;
     border-bottom: 1px solid #ddd;
     align-items: center;
@@ -377,14 +377,13 @@ body {
     margin-left: 0;
     display: block;
     text-align: center;
-    width: 50px;
+    margin-left: 20px;
 }
 
 .table-account-link {
     display: flex;
-    flex-direction: column;
     width: 180px;
-    align-items: baseline;
+    align-items: center;
 }
 
 
@@ -434,7 +433,7 @@ body {
 
 .table-tr_first-main {
     display: grid;
-    grid-template-columns: 280px 350px 290px 280px;
+    grid-template-columns: 320px 380px 320px 320px;
     grid-gap: 20px;
     border-bottom: 1px solid #ddd;
     align-items: center;
@@ -442,7 +441,7 @@ body {
 
 .table-tr-main {
     display: grid;
-    grid-template-columns: 280px 350px 290px 280px;
+    grid-template-columns: 320px 380px 320px 320px;
     grid-gap: 20px;
     border-left: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
@@ -551,21 +550,17 @@ body {
 }
 
 .table-tr-first-stories {
-    grid-template-columns: 400px 400px 400px;
+    grid-template-columns: 400px 400px 400px 140px;
 }
 
 .table-tr-stories {
-    grid-template-columns: 400px 400px 400px;
+    grid-template-columns: 400px 400px 400px 140px;
 }
 
-.box img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
+.box-posts .table-content-image {
+    width: 200px;
+    height: 200px;
+
 }
 
 .box {
@@ -617,4 +612,176 @@ body {
     border-radius: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.box-posts {
+    width: 200px;
+    height: 200px;
+}
+
+.box-reels {
+    width: 140px;
+    height: 240px;
+}
+
+.box-reels .table-content-image{
+    width: 140px;
+    height: 240px;
+}
+
+
+.video_player_image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    width: 80px;
+    height: 80px;
+}
+
+
+.view-media__modal {
+    font-family: sans-serif;
+    position: fixed;
+    overflow: auto;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.view-media-posts__modal {
+    font-family: sans-serif;
+    position: fixed;
+    overflow: auto;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+
+.modal-wrapper-view {
+    width: 300px;
+    height: 533px;
+}
+
+.modal-wrapper-view-posts {
+    width: 533px;
+    height: 533px;
+}
+
+.view-media__media {
+    width: 300px;
+    height: 533px;
+}
+
+.view-media-posts__media {
+    width: 533px;
+    height: 533px;
+}
+
+.close-view-media__modal-btn {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    cursor: pointer;
+}
+
+.close-view-media__modal-btn:hover {
+    opacity: 0.7;
+}
+
+.table-increase-media__btn {
+    cursor: pointer;
+}
+
+.carousel__image {
+    color: darkorange;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.box-stories {
+    width: 140px;
+    height: 240px;
+}
+
+.box-stories .table-content-image {
+    width: 140px;
+    height: 240px;
+}
+
+
+.custom-checkbox {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  top: -17px;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #a0a0a0;
+  border-radius: 5px;
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: #555;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.custom-checkbox .checkmark:after {
+  left: 9px;
+  top: 4px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+
+.download-selected__btn {
+    background-color: #6941C6;
+    border-radius: 8px;
+    padding: 7px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    width: 160px;
+    display: block;
+    text-align: center;
+    position: fixed;
+    bottom: 40px;
+    z-index: 100;
+    right: 80px;
+}
+
+.download-selected__btn:hover {
+    opacity: 0.7;
 }

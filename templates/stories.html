@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <main class="main-container">
+    <main class="main-container" id="main-container">
         <section class="group-management">
             <a class="back-link no-extra" href="/">← Back to groups</a>
             <div class="group-data__wrapper">
@@ -38,45 +38,60 @@
             <div class="search__wrapper">
                 <input type="text" id="searchInput" name="searchInput" class="searchInput" placeholder="Search...">
             </div>
-            <table class="accounts-table custom-table table-sort table-arrows" id="data-table">
-                  <tr class="table-tr-first table-tr-first-posts table-tr-first-stories">
-                    <th class="table-th"><p class="no-extra th-name">Story</p></th>
-                    <th class="table-th" >Date of release</th>
-                    <th class="table-th" >Downloading</th>
-                  </tr>
-                  {% for story in stories %}
-                      <tr class="table-tr table-tr-posts table-tr-stories">
-
-                        <td class="table-td table-td-posts table-td-first">
-                            <a class="no-extra table-account-link" href="/posts/">
-                                {% if 'mp4' in story[-1] %}
-                                    <div class="box">
-                                        <img class="table-content-image"
-                                             src="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{account_name}}/stories/{{story[0]}}_preview.jpg"
-                                             alt="Image">
-                                        <img class="video_player_image" src="https://www.pngarts.com/files/2/Play-Button-PNG-Picture.png" alt="" style="opacity: 0.75">
-                                    </div>
-                                        <!--                                <p class="no-extra table-account-p">На страницу</p>-->
-                                {% else %}
-                                    <div class="box">
-                                        <img class="table-content-image"
-                                             src="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{account_name}}/stories/{{story[0]}}.jpg"
-                                             alt="Image">
-                                    </div>
-                                {% endif %}
-                            </a>
-                        </td>
-                        <td class="table-td table-td-posts table-td-release-inf">
-                            <p class="no-extra">
-                                {{story[1]}}
-                            </p>
-                        </td>
-                        <td class="table-td table-td-posts">
-                            <a class="no-extra" href="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{story[-1]}}" download>Download story</a>
-                        </td>
+            <form method="post" action="/download_selected_stories">
+                <input type="hidden" value="{{account_name}}" name="checkboxes-hidden-acc-name" id="checkboxes-hidden-acc-name">
+                <button type="submit" class="no-extra download-selected__btn" onclick="uncheckAllCheckboxes()">Download Selected</button>
+                <table class="accounts-table custom-table table-sort table-arrows" id="data-table">
+                      <tr class="table-tr-first table-tr-first-posts table-tr-first-stories">
+                        <th class="table-th"><p class="no-extra th-name">Story</p></th>
+                        <th class="table-th" >Date of release</th>
+                        <th class="table-th" >Downloading</th>
                       </tr>
-                  {% endfor %}
-            </table>
+                      {% for story in stories %}
+                          <tr class="table-tr table-tr-posts table-tr-stories">
+
+                            <td class="table-td table-td-posts table-td-first">
+                                    {% if 'mp4' in story[-1] %}
+                                        <button class="no-extra table-increase-media__btn" id="table-increase-media__btn" type="button"
+                                        onclick="viewMedia('https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{account_name}}/stories/{{story[0]}}_vid.mp4',
+                                                           'https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{account_name}}/stories/{{story[0]}}_img.jpg')">
+                                            <div class="box box-stories">
+                                                <img class="table-content-image"
+                                                     src="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{account_name}}/stories/{{story[0]}}_img.jpg"
+                                                     alt="Image">
+                                                <img class="video_player_image" src="https://www.pngarts.com/files/2/Play-Button-PNG-Picture.png" alt="" style="opacity: 0.75">
+                                            </div>
+                                        </button>
+                                            <!--                                <p class="no-extra table-account-p">На страницу</p>-->
+                                    {% else %}
+                                        <button class="no-extra table-increase-media__btn" type="button"
+                                        onclick="viewMediaP('https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{story[-1]}}')">
+                                            <div class="box box-stories">
+                                                <img class="table-content-image"
+                                                     src="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{account_name}}/stories/{{story[0]}}_img.jpg"
+                                                     alt="Image">
+                                            </div>
+                                        </button>
+                                    {% endif %}
+                            </td>
+                            <td class="table-td table-td-posts table-td-release-inf">
+                                <p class="no-extra">
+                                    {{story[1]}}
+                                </p>
+                            </td>
+                            <td class="table-td table-td-posts">
+                                <a class="no-extra" href="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{story[-1]}}" download>Download story</a>
+                            </td>
+                            <td class="table-td table-td-posts">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" name="checkbox" value="{{story[0]}}">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                          </tr>
+                      {% endfor %}
+                </table>
+            </form>
         </section>
     </main>
 <!--    <section class="confirm-download-modal" id="confirm-download-modal">-->
@@ -92,8 +107,34 @@
 <!--        </div>-->
 <!--    </section>-->
 <!--    <script src="../static/js/download_post.js"></script>-->
+    <section class="view-media-posts__modal" id="view-media__modal-stories">
+        <button class="no-extra close-view-media__modal-btn" id="close-view-media__modal-btn-stories">
+                    <img src="../static/imgs/close.png" width="30" height="30">
+        </button>
+        <div class="modal-wrapper modal-wrapper-view modal-wrapper-view-posts">
+                <img class="view-media__media view-media-posts__media"
+                     id="view-media__media-img" width="533" height="533" src="">
+
+        </div>
+    </section>
+
+    <section class="view-media__modal" id="view-media__modal">
+        <button class="no-extra close-view-media__modal-btn" id="close-view-media__modal-btn">
+                    <img src="../static/imgs/close.png" width="30" height="30">
+        </button>
+        <div class="modal-wrapper modal-wrapper-view">
+                <video class="view-media__media" id="view-media__media-vid" controls autoplay loop poster="" width="300" height="533">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+        </div>
+    </section>
+
     <script src="https://cdn.jsdelivr.net/npm/table-sort-js/table-sort.js"></script>
     <script src="../static/js/table_search.js"></script>
+    <script src="../static/js/increase_media.js"></script>
+    <script src="../static/js/increase_media_stories.js"></script>
+    <script src="../static/js/uncheking_checkboxes.js"></script>
 
 </body>
 

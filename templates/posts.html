@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <main class="main-container">
+    <main class="main-container" id="main-container">
         <section class="group-management">
             <a class="back-link no-extra" href="/">← Back to groups</a>
             <div class="group-data__wrapper">
@@ -38,58 +38,86 @@
             <div class="search__wrapper">
                     <input type="text" id="searchInput" name="searchInput" class="searchInput" placeholder="Search...">
             </div>
-            <table class="accounts-table custom-table table-sort table-arrows" id="data-table">
-                  <tr class="table-tr-first table-tr-first-posts">
-                    <th class="table-th"><p class="no-extra th-name">Post</p></th>
-                    <th class="table-th">Post caption</th>
-                    <th class="table-th" >Date of release</th>
-                    <th class="table-th" >Downloading</th>
-                  </tr>
-                  {% for post in posts %}
-                      <tr class="table-tr table-tr-posts">
-
-                        <td class="table-td table-td-posts table-td-first">
-                            <a class="no-extra table-account-link" href="/posts/">
-                                <div class="box">
-                                    <img class="table-content-image"
-                                         src="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{post[-1]}}"
-                                         alt="Image">
-                                </div>
-<!--                                <p class="no-extra table-account-p">На страницу</p>-->
-                            </a>
-                        </td>
-                        <td class="table-td table-td-posts table-td-posts_caption"><p class="no-extra">{{post[1]}}</p></td>
-                        <td class="table-td table-td-posts table-td-release-inf">
-                            <p class="no-extra">
-                                {{post[2]}}
-                            </p>
-                        </td>
-                        <td class="table-td table-td-posts">
-                            <button class="no-extra download-post-cert-btn" id="download-post-cert-btn"
-                            onclick="sendDownloadPostRequest('{{post[0]}}') ">
-                                Download post
-                            </button>
-                        </td>
+            <form method="post" action="/download_selected_posts">
+                <input type="hidden" value="{{account_name}}" name="checkboxes-hidden-acc-name" id="checkboxes-hidden-acc-name">
+                <button type="submit" class="no-extra download-selected__btn" onclick="uncheckAllCheckboxes()">Download Selected</button>
+                <table class="accounts-table custom-table table-sort table-arrows" id="data-table">
+                      <tr class="table-tr-first table-tr-first-posts">
+                        <th class="table-th"><p class="no-extra th-name">Post</p></th>
+                        <th class="table-th">Post caption</th>
+                        <th class="table-th" >Date of release</th>
+                        <th class="table-th" >Downloading</th>
                       </tr>
-                  {% endfor %}
-            </table>
+                      {% for post in posts %}
+                          <tr class="table-tr table-tr-posts">
+
+                            <td class="table-td table-td-posts table-td-first">
+                                <button class="no-extra table-increase-media__btn" type="button"
+                                        onclick="viewMediaP('https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{post[-2]}}')">
+                                    <div class="box box-posts">
+                                        <img class="table-content-image"
+                                             src="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{post[-2]}}"
+                                             alt="Image">
+                                        {% if post[-1] == 1 %}
+                                            <svg aria-label="Кольцевая галерея" class="carousel__image" fill="currentColor" height="22" role="img" viewBox="0 0 48 48" width="22"><title>Кольцевая галерея</title><path d="M34.8 29.7V11c0-2.9-2.3-5.2-5.2-5.2H11c-2.9 0-5.2 2.3-5.2 5.2v18.7c0 2.9 2.3 5.2 5.2 5.2h18.7c2.8-.1 5.1-2.4 5.1-5.2zM39.2 15v16.1c0 4.5-3.7 8.2-8.2 8.2H14.9c-.6 0-.9.7-.5 1.1 1 1.1 2.4 1.8 4.1 1.8h13.4c5.7 0 10.3-4.6 10.3-10.3V18.5c0-1.6-.7-3.1-1.8-4.1-.5-.4-1.2 0-1.2.6z"></path></svg>
+                                        {% endif %}
+                                    </div>
+                                </button>
+    <!--                                <p class="no-extra table-account-p">На страницу</p>-->
+                            </td>
+                            <td class="table-td table-td-posts table-td-posts_caption"><p class="no-extra">{{post[1]}}</p></td>
+                            <td class="table-td table-td-posts table-td-release-inf">
+                                <p class="no-extra">
+                                    {{post[2]}}
+                                </p>
+                            </td>
+                            <td class="table-td table-td-posts">
+                                <form class="download-post-cert__form" action="/download_certain_post/{{post[0]}}" method="POST">
+                                    <button class="no-extra download-post-cert-btn" id="download-post-cert-btn">
+                                        Download post
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="table-td table-td-posts">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" name="checkbox" value="{{post[0]}}">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                          </tr>
+                      {% endfor %}
+                </table>
+            </form>
         </section>
     </main>
-    <section class="confirm-download-modal" id="confirm-download-modal">
-        <div class="modal-wrapper modal-wrapper-download">
-            <h2 class="confirm-download-modal__title">Confirm download</h2>
-            <form method="post" action="/download_local_file_action" id="download-local-file__form"
-                  class="confirm-download__form">
-                <button class="modal-confirm__confirm-btn" id="modal-confirm__confirm-btn">Confirm</button>
-                <button class="modal-confirm__back-btn" id="modal-confirm__back-btn">Back</button>
-                <input type="hidden" value="" id="confirm-download-filename__input"
-                       name="confirm-download-filename__input">
-            </form>
+<!--    <section class="confirm-download-modal" id="confirm-download-modal">-->
+<!--        <div class="modal-wrapper modal-wrapper-download">-->
+<!--            <h2 class="confirm-download-modal__title">Confirm download</h2>-->
+<!--            <form method="post" action="/download_local_file_action" id="download-local-file__form"-->
+<!--                  class="confirm-download__form">-->
+<!--                <button class="modal-confirm__confirm-btn" id="modal-confirm__confirm-btn">Confirm</button>-->
+<!--                <button class="modal-confirm__back-btn" id="modal-confirm__back-btn">Back</button>-->
+<!--                <input type="hidden" value="" id="confirm-download-filename__input"-->
+<!--                       name="confirm-download-filename__input">-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </section>-->
+<!--    <script src="../static/js/download_post.js"></script>-->
+    <section class="view-media-posts__modal" id="view-media__modal-posts">
+        <button class="no-extra close-view-media__modal-btn" id="close-view-media__modal-btn-posts">
+                    <img src="../static/imgs/close.png" width="30" height="30">
+        </button>
+        <div class="modal-wrapper modal-wrapper-view modal-wrapper-view-posts">
+                <img class="view-media__media view-media-posts__media"
+                     id="view-media__media-img" width="533" height="533" src="">
+
         </div>
     </section>
-    <script src="../static/js/download_post.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/table-sort-js/table-sort.js"></script>
     <script src="../static/js/table_search.js"></script>
+    <script src="../static/js/increase_media_posts.js"></script>
+    <script src="../static/js/uncheking_checkboxes.js"></script>
+
 
 </body>
 

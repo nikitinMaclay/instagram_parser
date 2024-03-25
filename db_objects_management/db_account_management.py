@@ -62,21 +62,16 @@ def delete_accounts_info(acc_id):
     db_con.close()
 
 
-def delete_accounts_media(accounts_ids):
-    for acc_id in accounts_ids:
-        print(acc_id)
-        db_con, cursor = create_database_local_connection()
-        cursor.execute(f"SELECT account_name FROM `accounts` WHERE account_id = '{acc_id}'")
-        acc_name = cursor.fetchone()[0]
-        cursor.close()
-        db_con.close()
-        objects = s3.list_objects_v2(Bucket=bucket_name, Prefix=f"{acc_name}/")
+def delete_accounts_media(accounts_names_list):
+    for acc_name in accounts_names_list:
+        try:
+            objects = s3.list_objects_v2(Bucket=bucket_name, Prefix=f"{acc_name}/")
 
-        if 'Contents' in objects:
-            for obj in objects['Contents']:
-                s3.delete_object(Bucket=bucket_name, Key=obj['Key'])
-
-        delete_accounts_info(acc_id)
+            if 'Contents' in objects:
+                for obj in objects['Contents']:
+                    s3.delete_object(Bucket=bucket_name, Key=obj['Key'])
+        except:
+            continue
 
 
-# delete_accounts_media([68])
+# delete_accounts_media(['lulu_kazakhstan_uR76UdZaG87qlJDwjkDiuuMwM0sV6Wfv'])

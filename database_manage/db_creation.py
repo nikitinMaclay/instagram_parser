@@ -28,7 +28,7 @@ def create_group_table():
 def create_accounts_table():
     db_con, cursor = create_database_local_connection()
     cursor.execute("CREATE TABLE `accounts` ("
-                   "account_id INT PRIMARY KEY AUTO_INCREMENT,"
+                   "account_id VARCHAR(512) PRIMARY KEY,"
                    "group_id INT,"
                    "account_name VARCHAR(255),"
                    "last_update_date DATE,"
@@ -47,11 +47,12 @@ def create_posts_table():
     db_con, cursor = create_database_local_connection()
     cursor.execute("CREATE TABLE `posts` ("
                    "post_id VARCHAR(128) PRIMARY KEY,"
-                   "account_id INT,"
+                   "account_id VARCHAR(512),"
                    "post_text TEXT,"
                    "post_preview VARCHAR(512),"
                    "date_of_release DATE,"
                    "last_update_date DATE,"
+                   "is_carousel INT,"
                    "FOREIGN KEY (account_id) REFERENCES `accounts`(account_id)"
                    ");")
     db_con.commit()
@@ -78,7 +79,7 @@ def create_reels_table():
     cursor.execute("CREATE TABLE `reels` ("
                    "id INT PRIMARY KEY AUTO_INCREMENT,"
                    "reel_id VARCHAR(128) UNIQUE,"
-                   "account_id INT,"
+                   "account_id VARCHAR(512),"
                    "reel_text TEXT,"
                    "date_of_release DATE,"
                    "last_update_date DATE,"
@@ -95,9 +96,10 @@ def create_stories_table():
     cursor.execute("CREATE TABLE `stories` ("
                    "id INT PRIMARY KEY AUTO_INCREMENT,"
                    "story_id VARCHAR(128),"
-                   "account_id INT,"
+                   "account_id VARCHAR(512),"
                    "date_of_release DATE,"
                    "story_image VARCHAR(512),"
+                   "media_type VARCHAR(128),"
                    "FOREIGN KEY (account_id) REFERENCES `accounts`(account_id)"
                    ");")
     db_con.commit()
@@ -105,6 +107,8 @@ def create_stories_table():
     db_con.close()
 
 
+# create_accounts_table()
 # create_posts_table()
 # create_posts_media_table()
 # create_reels_table()
+# create_stories_table()
