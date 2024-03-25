@@ -40,7 +40,7 @@ async def download_media(session, url, filename):
 
 
 async def download_and_zip_media(media_urls, output_zip):
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(trust_env=True, connector=aiohttp.TCPConnector(ssl=False)) as session:
         tasks = []
         for i, url in enumerate(media_urls):
             if 'jpg' in url:
@@ -214,7 +214,7 @@ def add_new_acc():
     acc_name = request.form['account-link']
     db_con.close()
     cursor.close()
-    parse_process = multiprocessing.Process(target=instagram_accounts_parsing, args=(group_id, acc_name, 9,))
+    parse_process = multiprocessing.Process(target=instagram_accounts_parsing, args=(group_id, acc_name, 5,))
     parse_process.start()
     return redirect(f"/{group_id}")
 

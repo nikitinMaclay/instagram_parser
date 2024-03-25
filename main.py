@@ -3,6 +3,7 @@ import os
 import secrets
 import shutil
 import string
+import sys
 import time
 import zipfile
 from datetime import datetime
@@ -81,14 +82,14 @@ def media_downloading_sync(link, local_path):
 
 
 async def download_all_files_posts(posts_medias: [PostMedia]):
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(trust_env=True, connector=aiohttp.TCPConnector(ssl=False)) as session:
         tasks = [media_downloading(session, post_media.link_to_download, post_media.post_image)
                  for post_media in posts_medias]
         await asyncio.gather(*tasks)
 
 
 async def download_all_files_reels(reels: [Reel]):
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(trust_env=True, connector=aiohttp.TCPConnector(ssl=False)) as session:
         tasks = [media_downloading(session, reel.link_to_download_vid, reel.reel_video)
                  for reel in reels]
         tasks_prev = [media_downloading(session, reel.link_to_download_prev, reel.reel_preview)
@@ -350,29 +351,41 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
         db_con.commit()
 
     for post in posts_list:
-        cursor.execute(f"Insert Into `posts`(post_id, account_id, post_text,"
-                       f" post_preview, date_of_release, last_update_date, is_carousel) "
-                       f"Values('{post.post_id}', '{account_id}', '{post.post_text}', '{post.post_preview}',"
-                       f"'{post.date_of_release}', '{datetime.now().date()}', '{post.is_carousel}')")
+        try:
+            cursor.execute(f"Insert Into `posts`(post_id, account_id, post_text,"
+                           f" post_preview, date_of_release, last_update_date, is_carousel) "
+                           f"Values('{post.post_id}', '{account_id}', '{post.post_text}', '{post.post_preview}',"
+                           f"'{post.date_of_release}', '{datetime.now().date()}', '{post.is_carousel}')")
+        except:
+            continue
 
     for post_media in posts_media_list:
-        cursor.execute(f"INSERT INTO `posts_media`(post_id, post_image, media_type) "
-                       f"VALUES('{post_media.post_id}',"
-                       f" '{post_media.post_image}',"
-                       f" '{post_media.media_type}')")
+        try:
+            cursor.execute(f"INSERT INTO `posts_media`(post_id, post_image, media_type) "
+                           f"VALUES('{post_media.post_id}',"
+                           f" '{post_media.post_image}',"
+                           f" '{post_media.media_type}')")
+        except:
+            continue
 
     for cur_reel in reels_list:
-        cursor.execute(f"INSERT INTO `reels`(reel_id, account_id, "
-                       f"reel_text, date_of_release, last_update_date, reel_image)"
-                       f" VALUES('{cur_reel.reel_id}', '{account_id}', '{cur_reel.reel_text}',"
-                       f" '{cur_reel.date_of_release}', '{datetime.now().date()}',"
-                       f" '{cur_reel.reel_video}')")
+        try:
+            cursor.execute(f"INSERT INTO `reels`(reel_id, account_id, "
+                           f"reel_text, date_of_release, last_update_date, reel_image)"
+                           f" VALUES('{cur_reel.reel_id}', '{account_id}', '{cur_reel.reel_text}',"
+                           f" '{cur_reel.date_of_release}', '{datetime.now().date()}',"
+                           f" '{cur_reel.reel_video}')")
+        except:
+            continue
 
     for story_ in stories_list:
-        cursor.execute(f"INSERT INTO `stories`(story_id, account_id, "
-                       f"date_of_release, story_image, media_type)"
-                       f" VALUES('{story_.story_id}', '{account_id}', '{story_.date_of_release}',"
-                       f" '{story_.story_image}', '{story_.media_type}')")
+        try:
+            cursor.execute(f"INSERT INTO `stories`(story_id, account_id, "
+                           f"date_of_release, story_image, media_type)"
+                           f" VALUES('{story_.story_id}', '{account_id}', '{story_.date_of_release}',"
+                           f" '{story_.story_image}', '{story_.media_type}')")
+        except:
+            continue
 
     for reel in reels_list:
         post_media_1, post_media_2 = PostMedia(), PostMedia()
@@ -389,11 +402,11 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
         post_media.link_to_download = post_.link_to_download_preview
         posts_media_list.append(post_media)
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(download_all_files_posts(posts_media_list))
-
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(download_all_files_reels(reels_list))
+    if sys.version_info[0] == 3 and sys.version_info[1] >= 8 and sys.platform.startswith('win'):
+        policy = asyncio.WindowsSelectorEventLoopPolicy()
+        asyncio.set_event_loop_policy(policy)
+        asyncio.run(download_all_files_posts(posts_media_list))
+        asyncio.run(download_all_files_reels(reels_list))
 
     for el in stories_download_links:
         media_downloading_sync(el[0], el[1])
@@ -435,6 +448,8 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
 
     cursor.close()
     db_con.close()
+
+    print(f"PARSING OF {account_name} IS DONE!")
 
 
 # instagram_accounts_parsing(1, "onzie", 9)
