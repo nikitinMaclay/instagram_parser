@@ -66,23 +66,6 @@ def zip_folder(folder_path, zip_path):
                 zipf.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), folder_path))
 
 
-async def media_downloading(session, link, local_path):
-    try:
-        async with session.get(link) as response:
-            if response.status == 200:
-                async with aiofiles.open(local_path, 'wb') as file:
-                    async for chunk in response.content.iter_any():
-                        await file.write(chunk)
-                print("Файл успешно скачан")
-            else:
-                print(f"Ошибка при скачивании файла:", response.status)
-                undownloaded_files.append([link, local_path])
-    except Exception as e:
-        print(e)
-        print("url: ", link)
-        undownloaded_files.append([link, local_path])
-
-
 def media_downloading_sync(link, local_path):
     try:
         session = requests.Session()
@@ -101,23 +84,6 @@ def media_downloading_sync(link, local_path):
             print("Ошибка при скачивании файла:", response.status_code)
     except Exception as e:
         print(e)
-
-
-async def download_all_files_posts(posts_medias: [PostMedia]):
-    async with aiohttp.ClientSession(trust_env=True, connector=aiohttp.TCPConnector(ssl=False, limit=500)) as session:
-        tasks = [media_downloading(session, post_media.link_to_download, post_media.post_image)
-                 for post_media in posts_medias]
-        await asyncio.gather(*tasks)
-
-
-async def download_all_files_reels(reels: [Reel]):
-    async with aiohttp.ClientSession(trust_env=True, connector=aiohttp.TCPConnector(ssl=False, limit=500)) as session:
-        tasks = [media_downloading(session, reel.link_to_download_vid, reel.reel_video)
-                 for reel in reels]
-        tasks_prev = [media_downloading(session, reel.link_to_download_prev, reel.reel_preview)
-                      for reel in reels]
-        await asyncio.gather(*tasks)
-        await asyncio.gather(*tasks_prev)
 
 
 def instagram_accounts_parsing(group_id, account_name, iterations):
@@ -424,28 +390,12 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
         post_media.link_to_download = post_.link_to_download_preview
         posts_media_list.append(post_media)
 
-    # if sys.version_info[0] == 3 and sys.version_info[1] >= 8 and sys.platform.startswith('win'):
-    #     policy = asyncio.WindowsSelectorEventLoopPolicy()
-    #     asyncio.set_event_loop_policy(policy)
-    #     asyncio.run(download_all_files_posts(posts_media_list))
-    #     asyncio.run(download_all_files_reels(reels_list))
+    for post_media in posts_media_list:
+        media_downloading_sync(post_media.link_to_download, post_media.post_image)
 
-    # for post_media in posts_media_list:
-    #     media_downloading_sync(post_media.link_to_download, post_media.post_image)
-    #
-    # for reel in reels_list:
-    #     media_downloading_sync(reel.link_to_download_vid, reel.reel_video)
-    #     media_downloading_sync(reel.link_to_download_prev, reel.reel_preview)
-
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(download_all_files_posts(posts_media_list))
-    loop.close()
-
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(download_all_files_reels(reels_list))
-    loop.close()
+    for reel in reels_list:
+        media_downloading_sync(reel.link_to_download_vid, reel.reel_video)
+        media_downloading_sync(reel.link_to_download_prev, reel.reel_preview)
 
     for el in stories_download_links:
         media_downloading_sync(el[0], el[1])
