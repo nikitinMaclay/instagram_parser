@@ -164,6 +164,7 @@ def index(group_id):
     current_group = cursor.fetchone()
     cursor.execute(f"SELECT * FROM `accounts` WHERE group_id = {group_id}")
     accounts = cursor.fetchall()
+    accounts = [i for i in accounts if i[-1]]
     accounts_count = len(accounts)
     cursor.execute("SELECT story_id FROM `stories` JOIN `accounts` ON `stories`.account_id = `accounts`.account_id")
     stories = cursor.fetchall()
