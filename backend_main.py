@@ -215,7 +215,7 @@ def add_new_acc():
     acc_name = request.form['account-link']
     db_con.close()
     cursor.close()
-    parse_process = multiprocessing.Process(target=instagram_accounts_parsing, args=(group_id, acc_name, 5,))
+    parse_process = multiprocessing.Process(target=instagram_accounts_parsing, args=(group_id, acc_name, 9,))
     parse_process.start()
     return redirect(f"/{group_id}")
 
