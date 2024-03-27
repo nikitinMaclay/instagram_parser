@@ -349,12 +349,9 @@ def download_certain_post(post_id):
     zip_folder(f"{post_id}/", f"{post_id}.zip")
     shutil.rmtree(f"{post_id}/")
 
-    delete_process = multiprocessing.Process(target=delete_local_file, args=(f"{post_id}.zip",))
-    delete_process.start()
-
     cursor.close()
     db_con.close()
-    return send_file(f"{post_id}.zip", as_attachment=True)
+    return post_id
 
 
 @app.route('/download_selected_posts/', methods=["POST"])
@@ -428,6 +425,13 @@ def download_selected_stories():
     delete_process = multiprocessing.Process(target=delete_local_file, args=(f"{account_name}_selected_stories.zip",))
     delete_process.start()
     return send_file(f"{account_name}_selected_stories.zip")
+
+
+@app.route('/send_local_zip/<string:post_id>', methods=["GET", "POST"])
+def send_local_zip(post_id):
+    delete_process = multiprocessing.Process(target=delete_local_file, args=(f"{post_id}.zip",))
+    delete_process.start()
+    return send_file(f"{post_id}.zip")
 
 
 def main():

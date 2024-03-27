@@ -72,11 +72,12 @@
                                 </p>
                             </td>
                             <td class="table-td table-td-posts">
-                                <form class="download-post-cert__form" action="/download_certain_post/{{post[0]}}" method="POST">
-                                    <button class="no-extra download-post-cert-btn" id="download-post-cert-btn">
+<!--                                <form class="download-post-cert__form" action="/download_certain_post/{{post[0]}}" method="POST">-->
+                                    <button class="no-extra download-post-cert-btn" id="download-post-cert-btn"
+                                            onclick="sendDownloadPostRequest('{{post[0]}}')" type="button">
                                         Download post
                                     </button>
-                                </form>
+<!--                                </form>-->
                             </td>
                             <td class="table-td table-td-posts">
                                 <label class="custom-checkbox">
@@ -117,7 +118,7 @@
     <script src="../static/js/table_search.js"></script>
     <script src="../static/js/increase_media_posts.js"></script>
     <script src="../static/js/uncheking_checkboxes.js"></script>
-
+    <script src="../static/js/download_post.js"></script>
 
 </body>
 

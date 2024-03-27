@@ -1,3 +1,4 @@
+# import grequests
 import json
 import os
 import secrets
@@ -7,10 +8,6 @@ import sys
 import time
 import zipfile
 from datetime import datetime
-
-import aiofiles
-import aiohttp
-import asyncio
 
 import boto3
 import requests
@@ -68,13 +65,7 @@ def zip_folder(folder_path, zip_path):
 
 def media_downloading_sync(link, local_path):
     try:
-        session = requests.Session()
-        retry = Retry(connect=3, backoff_factor=0.5)
-        adapter = HTTPAdapter(max_retries=retry)
-        session.mount('http://', adapter)
-        session.mount('https://', adapter)
-
-        response = session.get(link, proxies=proxies)
+        response = requests.get(link)
 
         if response.status_code == 200:
             with open(f"{local_path}", "wb") as file:
@@ -390,6 +381,12 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
         post_media.link_to_download = post_.link_to_download_preview
         posts_media_list.append(post_media)
 
+    # response = [grequests.get(el.link_to_download) for el in posts_media_list]
+    # resp = grequests.map(response)
+    # print(resp)
+    #
+    # time.sleep(100000)
+
     for post_media in posts_media_list:
         media_downloading_sync(post_media.link_to_download, post_media.post_image)
 
@@ -440,5 +437,5 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     print(f"PARSING OF {account_name} IS DONE!")
 
 
-# instagram_accounts_parsing(1, "onzie", 9)
+# instagram_accounts_parsing(1, "adidas", 1)
 
