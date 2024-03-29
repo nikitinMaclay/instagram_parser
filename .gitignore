@@ -1,2 +1,5 @@
 __pycache__/main.cpython-39.pyc
 test.py
+*.iml
+*.xml
+*.pyc
