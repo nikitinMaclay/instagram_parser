@@ -1,12 +1,14 @@
+import fgrequests
+from gevent.pywsgi import WSGIServer
 import multiprocessing
 import os
 import shutil
 import time
 import zipfile
 import aiofiles
-import aiohttp
 import asyncio
 
+import requests
 from flask import Flask, render_template, redirect, request, Response, session, send_file, jsonify
 
 import boto3
@@ -25,31 +27,40 @@ app.config['SECRET_KEY'] = "rtergkcx2312~@!3dsadase315240"
 flask_scheduler = APScheduler()
 
 
-async def download_media(session, url, filename):
-    async with session.get(url) as response:
-        if response.status == 200:
-            async with aiofiles.open(filename, 'wb') as f:
-                while True:
-                    chunk = await response.content.read(1024)
-                    if not chunk:
-                        break
-                    await f.write(chunk)
-            print(f"{filename} downloaded successfully")
-        else:
-            print(f"Failed to download {filename}")
+def get_public_ip():
+    response = requests.get('https://api.ipify.org')
+    return response.text
 
 
-async def download_and_zip_media(media_urls, output_zip):
-    async with aiohttp.ClientSession(trust_env=True, connector=aiohttp.TCPConnector(ssl=False)) as session:
-        tasks = []
-        for i, url in enumerate(media_urls):
+async def save_files(file_paths):
+    tasks = []
+    for file_path, content in file_paths.items():
+        tasks.append(save_file(file_path, content))
+    await asyncio.gather(*tasks)
+
+
+async def save_file(file_path, content):
+    try:
+        async with aiofiles.open(file_path, 'wb') as f:
+            await f.write(content)
+            print(f"File '{file_path}' saved successfully.")
+    except Exception as e:
+        print(e)
+        print("ERROR WHILE SAVING!!!")
+
+
+def download_and_zip_media(media_urls, output_zip):
+    resp = fgrequests.build(media_urls)
+
+    res_medias_to_download = {}
+    for idx, url in enumerate(media_urls):
+        if resp[idx]:
             if 'jpg' in url:
-                filename = f"media_{i+1}.jpg"
+                res_medias_to_download[f"media_{idx + 1}.jpg"] = resp[idx].content
             else:
-                filename = f"media_{i + 1}.mp4"
-            task = download_media(session, url, filename)
-            tasks.append(task)
-        await asyncio.gather(*tasks)
+                res_medias_to_download[f"media_{idx + 1}.mp4"] = resp[idx].content
+
+    asyncio.run(save_files(res_medias_to_download))
 
     # Создаем zip-архив
     with zipfile.ZipFile(output_zip, 'w') as zipf:
@@ -59,7 +70,10 @@ async def download_and_zip_media(media_urls, output_zip):
             else:
                 filename = f"media_{i+1}.mp4"
             zipf.write(filename)
-            os.remove(filename)
+            try:
+                os.remove(filename)
+            except:
+                pass
 
 
 def daily_instagram_accounts_parsing():
@@ -368,10 +382,7 @@ def download_selected_posts():
                 media_to_download_list.append("https://s3.timeweb.cloud/"
                                               "49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/" + i[0])
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(download_and_zip_media(media_to_download_list, f"{account_name}_selected_posts.zip"))
-    loop.close()
+    download_and_zip_media(media_to_download_list, f"{account_name}_selected_posts.zip")
     cursor.close()
     db_con.close()
     delete_process = multiprocessing.Process(target=delete_local_file, args=(f"{account_name}_selected_posts.zip",))
@@ -392,10 +403,7 @@ def download_selected_reels():
             for i in cur_media:
                 media_to_download_list.append("https://s3.timeweb.cloud/"
                                               "49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/" + i[0])
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(download_and_zip_media(media_to_download_list, f"{account_name}_selected_reels.zip"))
-    loop.close()
+    download_and_zip_media(media_to_download_list, f"{account_name}_selected_reels.zip")
     cursor.close()
     db_con.close()
     delete_process = multiprocessing.Process(target=delete_local_file, args=(f"{account_name}_selected_reels.zip",))
@@ -416,10 +424,8 @@ def download_selected_stories():
             for i in cur_media:
                 media_to_download_list.append("https://s3.timeweb.cloud/"
                                               "49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/" + i[0])
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(download_and_zip_media(media_to_download_list, f"{account_name}_selected_stories.zip"))
-    loop.close()
+
+    download_and_zip_media(media_to_download_list, f"{account_name}_selected_stories.zip")
     cursor.close()
     db_con.close()
     delete_process = multiprocessing.Process(target=delete_local_file, args=(f"{account_name}_selected_stories.zip",))
@@ -438,7 +444,22 @@ def main():
     flask_scheduler.add_job(id='Update Inst Accs Task', func=daily_instagram_accounts_parsing,
                             trigger='cron', hour=0, minute=0, second=0)
     flask_scheduler.start()
-    app.run(host="0.0.0.0", debug=True, use_reloader=False)
+
+    port = 5000
+    address = "0.0.0.0"
+    print(f'Starting server on 127.0.0.1:{port}...')
+    # print(f"http://127.0.0.1:5000")
+    print(f"http://127.0.0.1:5000")
+    http_server = WSGIServer((address, port), app)
+
+    http_server.serve_forever()
+
+
+# def main():
+#     flask_scheduler.add_job(id='Update Inst Accs Task', func=daily_instagram_accounts_parsing,
+#                             trigger='cron', hour=0, minute=0, second=0)
+#     flask_scheduler.start()
+#     app.run(host="0.0.0.0", debug=True, use_reloader=False)
 
 
 if __name__ == '__main__':

@@ -1,10 +1,11 @@
-# import grequests
-import json
+import fgrequests
+import threading
+import asyncio
+import aiofiles
 import os
 import secrets
 import shutil
 import string
-import sys
 import time
 import zipfile
 from datetime import datetime
@@ -12,16 +13,14 @@ from datetime import datetime
 import boto3
 import requests
 from botocore.config import Config
-from requests.adapters import HTTPAdapter
-from urllib3 import Retry
 
 from database_manage.db_creation import create_database_local_connection
 from parsing.instagram_classes import Post, PostMedia, Reel, Story
 
 
 proxies = {
-   'http': 'http://212.116.244.118:51523',
-   'https': 'http://212.116.244.118:51523'
+    "http": "http://mi8shag:qwerty123@212.116.244.118:51523",
+    "https": "http://mi8shag:qwerty123@212.116.244.118:51523"
 }
 
 
@@ -37,17 +36,43 @@ s3 = boto3.client(
 bucket_name = "49a2f75b-d806e76b-e741-49be-a128-315f48f934c4"
 
 
-def upload_to_s3(account_name):
+async def save_files(file_paths):
+    tasks = []
+    for file_path, content in file_paths.items():
+        tasks.append(save_file(file_path, content))
+    await asyncio.gather(*tasks)
+
+
+async def save_file(file_path, content):
+    try:
+        async with aiofiles.open(file_path, 'wb') as f:
+            await f.write(content)
+            print(f"File '{file_path}' saved successfully.")
+    except:
+        print("ERROR WHILE SAVING!!!")
+        return
+
+
+def upload_to_s3_threaded(account_name):
+    def upload_file(file_path):
+        try:
+            s3.upload_file(file_path, bucket_name, file_path)
+            print(f"{file_path} - has been uploaded")
+        except Exception as e:
+            print(e)
+            print(f"{file_path} - hasn't been uploaded")
+
+    threads = []
     for folder_name in os.listdir(account_name):
         folder_path = f"{account_name}/{folder_name}"
         for file_name in os.listdir(folder_path):
             file_path = f"{account_name}/{folder_name}/{file_name}"
-            try:
-                s3.upload_file(file_path, bucket_name, file_path)
-                print(f"{folder_name}/{file_name} - has been uploaded")
-            except Exception as e:
-                print(e)
-                print(f"{folder_name}/{file_name} - hasn't been uploaded")
+            thread = threading.Thread(target=upload_file, args=(file_path,))
+            threads.append(thread)
+            thread.start()
+
+    for thread in threads:
+        thread.join()
 
 
 def generate_random_string(length):
@@ -111,7 +136,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
 
     cursor.execute(f"SELECT account_id FROM `accounts` WHERE account_name = '{account_name}'")
     account_id = cursor.fetchone()
-    if account_name is not None:
+    if account_id is None:
         account_id = account_name + "_" + generate_random_string(32)
     else:
         account_id = account_id[0]
@@ -381,18 +406,27 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
         post_media.link_to_download = post_.link_to_download_preview
         posts_media_list.append(post_media)
 
-    # response = [grequests.get(el.link_to_download) for el in posts_media_list]
-    # resp = grequests.map(response)
-    # print(resp)
-    #
-    # time.sleep(100000)
+    resp = fgrequests.build([el.link_to_download for el in posts_media_list], proxies=proxies)
+    print("Responses are gotten")
+    print(f"length is {len(resp)}")
+    res_post_media_to_download = {}
+    # print(list(resp))
+    for idx, post_media in enumerate(posts_media_list):
+        if resp[idx]:
+            res_post_media_to_download[post_media.post_image] = resp[idx].content
+        else:
+            undownloaded_files.append([post_media.link_to_download, post_media.post_image])
+    # print(undownloaded_files)
+    print(f"keys here: " + str(len(res_post_media_to_download.keys())))
+    asyncio.run(save_files(res_post_media_to_download))
+    print("FINISH!")
 
-    for post_media in posts_media_list:
-        media_downloading_sync(post_media.link_to_download, post_media.post_image)
+    # for post_media in posts_media_list:
+    #     media_downloading_sync(post_media.link_to_download, post_media.post_image)
 
-    for reel in reels_list:
-        media_downloading_sync(reel.link_to_download_vid, reel.reel_video)
-        media_downloading_sync(reel.link_to_download_prev, reel.reel_preview)
+    # for reel in reels_list:
+    #     media_downloading_sync(reel.link_to_download_vid, reel.reel_video)
+    #     media_downloading_sync(reel.link_to_download_prev, reel.reel_preview)
 
     for el in stories_download_links:
         media_downloading_sync(el[0], el[1])
@@ -404,7 +438,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     print("Загрузка файлов на s3")
 
     try:
-        upload_to_s3(account_name)
+        upload_to_s3_threaded(account_name)
     except:
         pass
 
@@ -437,5 +471,5 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     print(f"PARSING OF {account_name} IS DONE!")
 
 
-# instagram_accounts_parsing(1, "adidas", 1)
+# instagram_accounts_parsing(1, "lulu_kazakhstan", 2)
 
