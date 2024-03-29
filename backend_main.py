@@ -387,7 +387,7 @@ def download_selected_posts():
     db_con.close()
     delete_process = multiprocessing.Process(target=delete_local_file, args=(f"{account_name}_selected_posts.zip",))
     delete_process.start()
-    return send_file(f"{account_name}_selected_posts.zip")
+    return send_file(f"{account_name}_selected_posts.zip", as_attachment=True)
 
 
 @app.route('/download_selected_reels/', methods=["POST"])
@@ -408,7 +408,7 @@ def download_selected_reels():
     db_con.close()
     delete_process = multiprocessing.Process(target=delete_local_file, args=(f"{account_name}_selected_reels.zip",))
     delete_process.start()
-    return send_file(f"{account_name}_selected_reels.zip")
+    return send_file(f"{account_name}_selected_reels.zip", as_attachment=True)
 
 
 @app.route('/download_selected_stories/', methods=["POST"])
@@ -430,14 +430,14 @@ def download_selected_stories():
     db_con.close()
     delete_process = multiprocessing.Process(target=delete_local_file, args=(f"{account_name}_selected_stories.zip",))
     delete_process.start()
-    return send_file(f"{account_name}_selected_stories.zip")
+    return send_file(f"{account_name}_selected_stories.zip", as_attachment=True)
 
 
 @app.route('/send_local_zip/<string:post_id>', methods=["GET", "POST"])
 def send_local_zip(post_id):
     delete_process = multiprocessing.Process(target=delete_local_file, args=(f"{post_id}.zip",))
     delete_process.start()
-    return send_file(f"{post_id}.zip")
+    return send_file(f"{post_id}.zip", as_attachment=True)
 
 
 def main():
