@@ -19,8 +19,8 @@ from parsing.instagram_classes import Post, PostMedia, Reel, Story
 
 
 proxies = {
-    "http": "http://mi8shag:qwerty123@212.116.244.118:51523",
-    "https": "http://mi8shag:qwerty123@212.116.244.118:51523"
+    "http": "http://aAnD9etY:5iYLwNwe@176.118.38.219:62240",
+    "https": "http://aAnD9etY:5iYLwNwe@176.118.38.219:62240"
 }
 
 
