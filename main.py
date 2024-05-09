@@ -143,15 +143,18 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
 
     for _ in range(iterations):
         n = 0
-        while n < 10:
+        while n < 20:
             try:
                 response = requests.get(url, headers=headers, params=querystring)
                 answer = response.json()
-                print(answer)
+                print(response.text)
+                time.sleep(10)
                 end_cursor = answer['data']['user']['edge_owner_to_timeline_media']['page_info']['end_cursor']
+                print(end_cursor)
                 break
             except Exception as e:
                 print(e)
+                print("ERROR", n)
                 time.sleep(10)
                 n += 1
 
@@ -222,7 +225,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     for _ in range(iterations):
 
         n = 0
-        while n < 10:
+        while n < 20:
             try:
                 response = requests.get(url, headers=headers, params=querystring)
                 print('REEELS')
@@ -277,8 +280,15 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
         "X-RapidAPI-Key": "1c462312edmsh1ec8f2d3119f648p1beb45jsna5c4bf12a219",
         "X-RapidAPI-Host": "instagram-scraper-2022.p.rapidapi.com"
     }
-    response_id = requests.get(url, headers=headers, params=querystring)
-    account_inst_id = response_id.json()['id']
+    n = 0
+    while n < 20:
+        try:
+            response_id = requests.get(url, headers=headers, params=querystring)
+            account_inst_id = response_id.json()['id']
+            break
+        except:
+            n += 1
+            time.sleep(10)
     url = "https://instagram-scraper-2022.p.rapidapi.com/ig/stories/"
     querystring = {"id_user": account_inst_id}
     headers = {
@@ -289,7 +299,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     stories_download_links = []
     stories_list = []
     n = 0
-    while n < 10:
+    while n < 20:
         response = requests.get(url, headers=headers, params=querystring)
         answer = response.json()
         if "reels_media" in answer.keys():
@@ -336,7 +346,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     }
 
     n = 0
-    while n < 10:
+    while n < 20:
         try:
             response = requests.get(url, headers=headers, params=querystring)
             answer = response.json()
@@ -471,5 +481,5 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     print(f"PARSING OF {account_name} IS DONE!")
 
 
-# instagram_accounts_parsing(1, "lulu_kazakhstan", 2)
+instagram_accounts_parsing(1, "alo", 2)
 

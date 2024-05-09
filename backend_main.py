@@ -160,7 +160,7 @@ def default_index():
 
     cursor.execute("SELECT * FROM `accounts` WHERE group_id = 1")
     accounts = cursor.fetchall()
-    accounts = [i for i in accounts if i[-1]]
+    accounts = [i for i in accounts if i[-1] or i[-1] == 0]
     accounts_count = len(accounts)
     cursor.close()
     db_con.close()
@@ -442,7 +442,7 @@ def send_local_zip(post_id):
 
 def main():
     flask_scheduler.add_job(id='Update Inst Accs Task', func=daily_instagram_accounts_parsing,
-                            trigger='cron', hour=0, minute=0, second=0)
+                            trigger='cron', hour=20, minute=13, second=30)
     flask_scheduler.start()
 
     port = 5000
