@@ -550,11 +550,11 @@ body {
 }
 
 .table-tr-first-stories {
-    grid-template-columns: 400px 400px 400px 140px;
+    grid-template-columns: 300px 300px 300px 300px 140px;
 }
 
 .table-tr-stories {
-    grid-template-columns: 400px 400px 400px 140px;
+    grid-template-columns: 300px 300px 300px 300px 140px;
 }
 
 .box-posts .table-content-image {

@@ -1,3 +1,4 @@
+import dropbox
 import fgrequests
 import threading
 import asyncio
@@ -51,6 +52,24 @@ async def save_file(file_path, content):
     except:
         print("ERROR WHILE SAVING!!!")
         return
+
+
+def upload_files_dropbox(account_name):
+    dbx = dropbox.Dropbox(
+        'sl.B05A9eHOv6qRubvHVU_uLpur_ZcnfLUrJO1I8qTmwgbjzLCsdYhkhMTflfMoWE8usHs_Ol_dCIo3T8eYxc9u1RG1Ro4Vw4zz_DOihiySC4QlzzVH2y0_ej9-S58wkBmYCmBnEVepFIkfIcv-bfRrpD8')
+
+    for folder_name in os.listdir(account_name):
+        folder_path = f"{account_name}/{folder_name}"
+        for file_name in os.listdir(folder_path):
+            file_path = f"{account_name}/{folder_name}/{file_name}"
+            try:
+                with open(file_path, "rb") as f:
+                    data_dbx = f.read()
+                    dbx.files_upload(data_dbx, "/" + file_path)
+                print(f"{file_path} - has been uploaded")
+            except Exception as e:
+                print(e)
+                print(f"{file_path} - hasn't been uploaded")
 
 
 def upload_to_s3_threaded(account_name):
@@ -147,10 +166,8 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
             try:
                 response = requests.get(url, headers=headers, params=querystring)
                 answer = response.json()
-                print(response.text)
-                time.sleep(10)
-                end_cursor = answer['data']['user']['edge_owner_to_timeline_media']['page_info']['end_cursor']
-                print(end_cursor)
+                end_cursor = (
+                    answer)['data']['xdt_api__v1__feed__user_timeline_graphql_connection']['page_info']['end_cursor']
                 break
             except Exception as e:
                 print(e)
@@ -158,11 +175,11 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
                 time.sleep(10)
                 n += 1
 
-        edges = answer['data']['user']['edge_owner_to_timeline_media']['edges']
+        edges = answer['data']['xdt_api__v1__feed__user_timeline_graphql_connection']['edges']
 
         for edge in edges:
             edge_node = edge['node']
-            if edge_node['is_video']:
+            if edge_node['video_versions']:
                 continue
             post = Post()
             post.post_id = edge_node['id']
@@ -172,38 +189,38 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
                 continue
             post.account_id = account_id
             try:
-                post.post_text = edge_node['edge_media_to_caption'].get('edges', [{}])[0]['node']['text']
+                post.post_text = edge_node['caption']['text']
                 post.post_text = post.post_text.replace("'", "").replace('"', "")
             except:
                 post.post_text = "No caption"
-            date_taken = edge_node['taken_at_timestamp']
+            date_taken = edge_node['taken_at']
             date_of_release = datetime.fromtimestamp(date_taken)
             post.date_of_release = date_of_release
-            post.link_to_download_preview = edge_node['display_url']
+            post.link_to_download_preview = edge_node['image_versions2']['candidates'][0]['url']
             post.post_preview = f"{account_name}/posts/{edge_node['id']}_preview.jpg"
-            if "edge_sidecar_to_children" not in edge_node.keys():
+            if not edge_node["carousel_media"]:
                 post.is_carousel = 0
                 post_media = PostMedia()
                 post_media.post_id = post.post_id
                 post_media.post_image = f"{account_name}/posts/{edge_node['id']}_img.jpg"
-                post_media.link_to_download = edge_node['display_url']
+                post_media.link_to_download = edge_node['image_versions2']['candidates'][0]['url']
                 post_media.media_type = "image"
 
                 posts_list.append(post)
                 posts_media_list.append(post_media)
             else:
                 post.is_carousel = 1
-                for el in edge_node['edge_sidecar_to_children']['edges']:
-                    el_node = el['node']
+                for el in edge_node['carousel_media']:
+                    el_node = el
                     post_media = PostMedia()
                     post_media.post_id = post.post_id
-                    if el_node['is_video']:
+                    if el_node['video_versions']:
                         post_media.post_image = f"{account_name}/posts/{el_node['id']}_vid.mp4"
-                        post_media.link_to_download = el_node['video_url']
+                        post_media.link_to_download = el_node['video_versions'][0]['url']
                         post_media.media_type = "video"
                     else:
                         post_media.post_image = f"{account_name}/posts/{el_node['id']}_img.jpg"
-                        post_media.link_to_download = el_node['display_url']
+                        post_media.link_to_download = el_node['image_versions2']['candidates'][0]['url']
                         post_media.media_type = "image"
 
                     posts_media_list.append(post_media)
@@ -229,7 +246,8 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
             try:
                 response = requests.get(url, headers=headers, params=querystring)
                 print('REEELS')
-                print(response.json())
+                # print(response.text)
+                # time.sleep(1000)
                 answer = response.json()
                 end_cursor = answer['paging_info']
 
@@ -300,6 +318,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     stories_list = []
     n = 0
     while n < 20:
+        print("STORIES")
         response = requests.get(url, headers=headers, params=querystring)
         answer = response.json()
         if "reels_media" in answer.keys():
@@ -320,6 +339,11 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
             date_of_release_story = story_item['taken_at']
             date_of_release_story = datetime.fromtimestamp(date_of_release_story)
             story.date_of_release = date_of_release_story
+
+            if "story_link_stickers" in story_item.keys():
+                story.on_story_link = story_item['story_link_stickers'][0]['story_link']['url']
+            else:
+                story.on_story_link = "No links"
 
             if 'video_versions' in story_item.keys():
                 story.story_image = f"{account_name}/stories/{story.story_id}_vid.mp4"
@@ -395,9 +419,9 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     for story_ in stories_list:
         try:
             cursor.execute(f"INSERT INTO `stories`(story_id, account_id, "
-                           f"date_of_release, story_image, media_type)"
+                           f"date_of_release, story_image, media_type, on_story_link)"
                            f" VALUES('{story_.story_id}', '{account_id}', '{story_.date_of_release}',"
-                           f" '{story_.story_image}', '{story_.media_type}')")
+                           f" '{story_.story_image}', '{story_.media_type}', '{story_.on_story_link}')")
         except:
             continue
 
@@ -452,6 +476,11 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     except:
         pass
 
+    try:
+        upload_files_dropbox(account_name)
+    except:
+        pass
+
     zip_folder(f"{account_name}/", f"{account_name}.zip")
 
     s3.upload_file(f"{account_name}.zip", bucket_name, f"{account_name}/{account_name}.zip")
@@ -481,5 +510,4 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
     print(f"PARSING OF {account_name} IS DONE!")
 
 
-instagram_accounts_parsing(1, "alo", 2)
-
+# instagram_accounts_parsing(1, "lulu_kazakhstan", 1)

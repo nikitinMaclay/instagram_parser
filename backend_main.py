@@ -329,7 +329,7 @@ def stories_page(account_name):
 
     acc_id = cursor.fetchone()[0]
 
-    cursor.execute(f"SELECT story_id, date_of_release, story_image FROM `stories` WHERE account_id = '{acc_id}';")
+    cursor.execute(f"SELECT story_id, date_of_release, on_story_link, story_image FROM `stories` WHERE account_id = '{acc_id}';")
 
     stories = cursor.fetchall()
     # stories = [list(i) for i in stories]
@@ -442,7 +442,7 @@ def send_local_zip(post_id):
 
 def main():
     flask_scheduler.add_job(id='Update Inst Accs Task', func=daily_instagram_accounts_parsing,
-                            trigger='cron', hour=20, minute=13, second=30)
+                            trigger='cron', hour=0, minute=0, second=0)
     flask_scheduler.start()
 
     port = 5000

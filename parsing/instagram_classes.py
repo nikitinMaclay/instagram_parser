@@ -36,5 +36,6 @@ class Story:
         self.date_of_release = ""
         self.story_image = ""
         self.media_type = ""
+        self.on_story_link = ""
 
 

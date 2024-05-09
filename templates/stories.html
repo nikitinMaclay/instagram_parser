@@ -45,6 +45,7 @@
                       <tr class="table-tr-first table-tr-first-posts table-tr-first-stories">
                         <th class="table-th"><p class="no-extra th-name">Story</p></th>
                         <th class="table-th" >Date of release</th>
+                        <th class="table-th" >Links on story</th>
                         <th class="table-th" >Downloading</th>
                       </tr>
                       {% for story in stories %}
@@ -78,6 +79,13 @@
                                 <p class="no-extra">
                                     {{story[1]}}
                                 </p>
+                            </td>
+                            <td class="table-td table-td-posts">
+                                {% if 'No links' in story[-2] %}
+                                    <p class="no-extra">No links</p>
+                                {% else %}
+                                    <a class="no-extra" href="{{story[-2]}}">Click</a>
+                                {% endif %}
                             </td>
                             <td class="table-td table-td-posts">
                                 <a class="no-extra" href="https://s3.timeweb.cloud/49a2f75b-d806e76b-e741-49be-a128-315f48f934c4/{{story[-1]}}" download>Download story</a>

@@ -8,7 +8,7 @@ def create_database_local_connection():
         port=3306,
         user="root",
         passwd="lapa21",
-        database="Instagram",
+        database="instagram",
     )
 
     cursor = database_connection.cursor()
@@ -100,6 +100,7 @@ def create_stories_table():
                    "date_of_release DATE,"
                    "story_image VARCHAR(512),"
                    "media_type VARCHAR(128),"
+                   "on_story_link VARCHAR(512),"
                    "FOREIGN KEY (account_id) REFERENCES `accounts`(account_id)"
                    ");")
     db_con.commit()
@@ -107,8 +108,10 @@ def create_stories_table():
     db_con.close()
 
 
+# create_group_table()
 # create_accounts_table()
 # create_posts_table()
 # create_posts_media_table()
 # create_reels_table()
 # create_stories_table()
+
