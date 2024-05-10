@@ -16,6 +16,7 @@ import requests
 from botocore.config import Config
 
 from database_manage.db_creation import create_database_local_connection
+from dropbox_management.get_short_live_access_key import get_access_token
 from parsing.instagram_classes import Post, PostMedia, Reel, Story
 
 
@@ -55,8 +56,8 @@ async def save_file(file_path, content):
 
 
 def upload_files_dropbox(account_name):
-    dbx = dropbox.Dropbox(
-        'sl.B05A9eHOv6qRubvHVU_uLpur_ZcnfLUrJO1I8qTmwgbjzLCsdYhkhMTflfMoWE8usHs_Ol_dCIo3T8eYxc9u1RG1Ro4Vw4zz_DOihiySC4QlzzVH2y0_ej9-S58wkBmYCmBnEVepFIkfIcv-bfRrpD8')
+    access_token = get_access_token()["access_token"]
+    dbx = dropbox.Dropbox(access_token)
 
     for folder_name in os.listdir(account_name):
         folder_path = f"{account_name}/{folder_name}"
@@ -327,7 +328,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
             n += 1
             time.sleep(10)
 
-    if answer['reels_media']:
+    if 'reels_media' in answer.keys() and answer['reels_media']:
         story_items = answer['reels_media'][0]['items']
         for story_item in story_items:
             story = Story()

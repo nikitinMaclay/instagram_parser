@@ -1,7 +1,9 @@
 __pycache__/main.cpython-39.pyc
-test.py
+dropbox_management/create_refresh_token.py
 *.iml
 *.xml
 *.pyc
 *.pyc
 *.pyc
+*.xml
+*.iml
