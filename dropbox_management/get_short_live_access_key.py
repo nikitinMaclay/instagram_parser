@@ -3,10 +3,10 @@ import requests
 
 def get_access_token():
 
-    refresh_token = "clydu3Qm-bwAAAAAAAAAARM2AIH23RLRh2qyL2W7zXBpupai8UpFJrtJuIEgoiFb"
+    refresh_token = "1R5CJIHXPfYAAAAAAAAAAbX0Scz1qaxKlIUCrGvGRWYecxmp4dDIc0qig9CCY04R"
 
-    app_key = "szk2ufhycz01zqh"
-    secret_key = "xjo2fzzr0oohm1k"
+    app_key = "lyccpb244lywmem"
+    secret_key = "z4oprbdkrpwga08"
 
     url = "https://api.dropbox.com/oauth2/token"
     data = {
