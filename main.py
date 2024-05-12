@@ -307,7 +307,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
         "X-RapidAPI-Host": "instagram-scraper-2022.p.rapidapi.com"
     }
     n = 0
-    while n < 20:
+    while n < 30:
         try:
             response_id = requests.get(url, headers=headers, params=querystring)
             account_inst_id = response_id.json()['id']
