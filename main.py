@@ -64,6 +64,13 @@ def upload_files_dropbox(account_name):
         for file_name in os.listdir(folder_path):
             file_path = f"{account_name}/{folder_name}/{file_name}"
             try:
+                if "preview" in file_name:
+                    continue
+                elif folder_name == "stories":
+                    if file_name.endswith("img.jpg"):
+                        file_name_to_check = file_name[:-8]
+                        if (file_name_to_check + "_vid.mp4") in os.listdir(f"{account_name}/{folder_name}"):
+                            continue
                 with open(file_path, "rb") as f:
                     data_dbx = f.read()
                     dbx.files_upload(data_dbx, "/" + file_path)
@@ -203,7 +210,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
                 post.is_carousel = 0
                 post_media = PostMedia()
                 post_media.post_id = post.post_id
-                post_media.post_image = f"{account_name}/posts/{edge_node['id']}_img.jpg"
+                post_media.post_image = f"{account_name}/posts/{post.date_of_release}_{edge_node['id']}_img.jpg"
                 post_media.link_to_download = edge_node['image_versions2']['candidates'][0]['url']
                 post_media.media_type = "image"
 
@@ -216,11 +223,11 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
                     post_media = PostMedia()
                     post_media.post_id = post.post_id
                     if el_node['video_versions']:
-                        post_media.post_image = f"{account_name}/posts/{el_node['id']}_vid.mp4"
+                        post_media.post_image = f"{account_name}/posts/{post.date_of_release}_{el_node['id']}_vid.mp4"
                         post_media.link_to_download = el_node['video_versions'][0]['url']
                         post_media.media_type = "video"
                     else:
-                        post_media.post_image = f"{account_name}/posts/{el_node['id']}_img.jpg"
+                        post_media.post_image = f"{account_name}/posts/{post.date_of_release}_{el_node['id']}_img.jpg"
                         post_media.link_to_download = el_node['image_versions2']['candidates'][0]['url']
                         post_media.media_type = "image"
 
@@ -278,7 +285,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
                 reel.reel_text = "No caption"
             date_of_release = datetime.fromtimestamp(item_media['taken_at'])
             reel.date_of_release = date_of_release
-            reel.reel_video = f"{account_name}/reels/{reel.reel_id}_vid.mp4"
+            reel.reel_video = f"{account_name}/reels/{reel.date_of_release}_{reel.reel_id}_vid.mp4"
             reel.link_to_download_vid = item_media['video_versions'][0]['url']
             reel.reel_preview = f"{account_name}/reels/{reel.reel_id}_preview.jpg"
             try:
@@ -347,7 +354,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
                 story.on_story_link = "No links"
 
             if 'video_versions' in story_item.keys():
-                story.story_image = f"{account_name}/stories/{story.story_id}_vid.mp4"
+                story.story_image = f"{account_name}/stories/{story.date_of_release}_{story.story_id}_vid.mp4"
                 stories_download_links.append([story_item['video_versions'][0]['url'], story.story_image])
 
                 stories_download_links.append([story_item['image_versions2']['candidates'][0]['url'],
@@ -355,7 +362,7 @@ def instagram_accounts_parsing(group_id, account_name, iterations):
                 story.media_type = "video"
 
             else:
-                story.story_image = f"{account_name}/stories/{story.story_id}_img.jpg"
+                story.story_image = f"{account_name}/stories/{story.date_of_release}_{story.story_id}_img.jpg"
                 stories_download_links.append([story_item['image_versions2']['candidates'][0]['url'],
                                                f"{account_name}/stories/{story.story_id}_img.jpg"])
                 story.media_type = "img"
